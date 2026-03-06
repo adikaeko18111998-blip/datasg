@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Kependudukan Sanggrahan 1</title>
+    <style>
+        /* RESET CSS */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --primary-color: #2c3e50; --secondary-color: #27ae60; --bg-color: #f4f6f9; --text-color: #333; --card-bg: #ffffff; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; }
+        header { background-color: var(--primary-color); color: white; width: 100%; padding: 2rem 1rem; text-align: center; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        header h1 { font-size: 2rem; margin-bottom: 5px; letter-spacing: 1px; }
+        header p { font-size: 1rem; opacity: 0.9; }
+        .container { max-width: 1200px; margin: 30px auto; padding: 0 20px; display: flex; flex-direction: column; gap: 30px; }
+        .card { background-color: var(--card-bg); padding: 25px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); width: 100%; }
+        .card h2 { margin-top: 0; color: var(--primary-color); border-bottom: 2px solid #ecf0f1; padding-bottom: 10px; margin-bottom: 20px; font-size: 1.3rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media (max-width: 768px) { .form-grid { grid-template-columns: 1fr; } }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.95rem; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 5px; font-size: 0.95rem; background-color: #fafafa; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); background-color: #fff; }
+        #umur { background-color: #e9ecef; cursor: not-allowed; font-weight: bold; }
+        .btn-submit { grid-column: 1 / -1; background-color: var(--secondary-color); color: white; border: none; padding: 14px 20px; cursor: pointer; border-radius: 5px; font-size: 1.1rem; font-weight: bold; transition: background-color 0.3s; margin-top: 10px; }
+        .btn-submit:hover { background-color: #219653; }
+        .btn-submit:disabled { background-color: #95a5a6; cursor: not-allowed; }
+        .stats-container { margin-bottom: 20px; }
+        .stat-card { background-color: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; border: 1px solid #e0e0e0; border-bottom: 5px solid var(--secondary-color); box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .stat-card h3 { font-size: 1rem; color: #555; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .kategori-label { background-color: #ecf0f1; padding: 6px 15px; border-radius: 20px; font-weight: bold; color: var(--primary-color); margin-bottom: 15px; font-size: 0.95rem; }
+        .stat-card p { font-size: 3rem; font-weight: bold; color: var(--secondary-color); margin: 0; line-height: 1; }
+        .stat-card span.teks-orang { font-size: 1.2rem; color: #7f8c8d; font-weight: normal; }
+        .filter-container { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 20px; background-color: #ecf0f1; padding: 15px; border-radius: 6px; }
+        @media (max-width: 768px) { .filter-container { grid-template-columns: 1fr; } }
+        .filter-container select { padding: 10px; border-radius: 4px; border: 1px solid #bdc3c7; font-size: 0.95rem; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        table th, table td { padding: 14px 15px; text-align: left; border-bottom: 1px solid #ddd; font-size: 0.95rem; }
+        table th { background-color: var(--primary-color); color: white; white-space: nowrap; }
+        table tbody tr:hover { background-color: #f1f2f6; }
+        .badge { padding: 6px 10px; border-radius: 12px; font-size: 0.85rem; font-weight: bold; color: white; display: inline-block; }
+        .badge-sangat-kurang { background-color: #e74c3c; } 
+        .badge-kurang { background-color: #e67e22; }        
+        .badge-cukup { background-color: #3498db; }         
+        .badge-mampu { background-color: #2ecc71; }         
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Data Kependudukan Sanggrahan 1</h1>
+        <p>Sistem Klasifikasi Terpadu Berdasarkan NIK, Umur, Pendidikan, dan Strata Ekonomi</p>
+    </header>
+
+    <div class="container">
+        
+        <div class="card">
+            <h2>Tambah Data Warga Baru</h2>
+            <form id="pendudukForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nik">NIK (Nomor Induk Kependudukan)</label>
+                        <input type="text" id="nik" placeholder="Masukkan 16 digit NIK" maxlength="16" minlength="16" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap</label>
+                        <input type="text" id="nama" placeholder="Masukkan nama" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggalLahir">Tanggal Lahir</label>
+                        <input type="date" id="tanggalLahir" required onchange="hitungUmurOtomatis()">
+                    </div>
+                    <div class="form-group">
+                        <label for="umur">Umur (Terisi Otomatis)</label>
+                        <input type="number" id="umur" placeholder="Umur akan muncul di sini" readonly required>
+                    </div>
+                    <div class="form-group">
+                        <label for="pendidikan">Tingkat Pendidikan</label>
+                        <select id="pendidikan" required>
+                            <option value="" disabled selected>Pilih tingkat pendidikan...</option>
+                            <option value="Belum / Tidak Sekolah">Belum / Tidak Sekolah</option>
+                            <option value="Tamat SD / Sederajat">Tamat SD / Sederajat</option>
+                            <option value="Tamat SMP / Sederajat">Tamat SMP / Sederajat</option>
+                            <option value="Tamat SMA / SMK / Sederajat">Tamat SMA / SMK / Sederajat</option>
+                            <option value="Diploma (D1 - D3)">Diploma (D1 - D3)</option>
+                            <option value="Sarjana (D4 / S1)">Sarjana (D4 / S1)</option>
+                            <option value="Pascasarjana (S2 / S3)">Pascasarjana (S2 / S3)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="ekonomi">Strata Ekonomi</label>
+                        <select id="ekonomi" required>
+                            <option value="" disabled selected>Pilih strata ekonomi...</option>
+                            <option value="Sangat Kurang Mampu">Sangat Kurang Mampu</option>
+                            <option value="Kurang Mampu">Kurang Mampu</option>
+                            <option value="Cukup Mampu">Cukup Mampu</option>
+                            <option value="Mampu">Mampu</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn-submit">Simpan Data ke Tabel</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Database Penduduk & Statistik</h2>
+            
+            <div class="stats-container" id="panelStatistik">
+            </div>
+
+            <div class="filter-container">
+                <select id="filterUmur" onchange="saringTabel()">
+                    <option value="Semua">Semua Kategori Umur</option>
+                    <option value="Balita (0-5)">Balita (0-5)</option>
+                    <option value="Anak & Remaja (6-18)">Anak & Remaja (6-18)</option>
+                    <option value="Usia Produktif (19-59)">Usia Produktif (19-59)</option>
+                    <option value="Lansia (60+)">Lansia (60+)</option>
+                </select>
+                <select id="filterPendidikan" onchange="saringTabel()">
+                    <option value="Semua">Semua Pendidikan</option>
+                    <option value="Belum / Tidak Sekolah">Belum / Tidak Sekolah</option>
+                    <option value="Tamat SD / Sederajat">Tamat SD / Sederajat</option>
+                    <option value="Tamat SMP / Sederajat">Tamat SMP / Sederajat</option>
+                    <option value="Tamat SMA / SMK / Sederajat">Tamat SMA / SMK / Sederajat</option>
+                    <option value="Diploma (D1 - D3)">Diploma (D1 - D3)</option>
+                    <option value="Sarjana (D4 / S1)">Sarjana (D4 / S1)</option>
+                    <option value="Pascasarjana (S2 / S3)">Pascasarjana (S2 / S3)</option>
+                </select>
+                <select id="filterEkonomi" onchange="saringTabel()">
+                    <option value="Semua">Semua Strata Ekonomi</option>
+                    <option value="Sangat Kurang Mampu">Sangat Kurang Mampu</option>
+                    <option value="Kurang Mampu">Kurang Mampu</option>
+                    <option value="Cukup Mampu">Cukup Mampu</option>
+                    <option value="Mampu">Mampu</option>
+                </select>
+            </div>
+
+            <div style="overflow-x:auto;">
+                <table id="tabelData">
+                    <thead>
+                        <tr>
+                            <th>NIK</th>
+                            <th>Nama Lengkap</th>
+                            <th>Tanggal Lahir</th>
+                            <th>Umur</th>
+                            <th>Kategori Umur</th>
+                            <th>Pendidikan</th>
+                            <th>Strata Ekonomi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // === LINK APPS SCRIPT ANDA SUDAH DIPASANG DI BAWAH INI ===
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwida7Z9cJIyxwgk2qbPHHBcsatyTAsAm_OWzXWTSBsuBWWqS0QDTJommLN3bUQQqQ/exec';
+        // =========================================================
+
+        function hitungUmurOtomatis() {
+            const inputTanggalLahir = document.getElementById('tanggalLahir').value;
+            if (inputTanggalLahir) {
+                const tglLahir = new Date(inputTanggalLahir);
+                const hariIni = new Date();
+                let umur = hariIni.getFullYear() - tglLahir.getFullYear();
+                const bulan = hariIni.getMonth() - tglLahir.getMonth();
+                if (bulan < 0 || (bulan === 0 && hariIni.getDate() < tglLahir.getDate())) {
+                    umur--;
+                }
+                document.getElementById('umur').value = umur >= 0 ? umur : 0;
+            }
+        }
+
+        function getKategoriUmur(umur) {
+            if (umur <= 5) return "Balita (0-5)";
+            if (umur <= 18) return "Anak & Remaja (6-18)";
+            if (umur <= 59) return "Usia Produktif (19-59)";
+            return "Lansia (60+)";
+        }
+
+        function getBadgeClass(status) {
+            switch(status) {
+                case "Sangat Kurang Mampu": return "badge badge-sangat-kurang";
+                case "Kurang Mampu": return "badge badge-kurang";
+                case "Cukup Mampu": return "badge badge-cukup";
+                case "Mampu": return "badge badge-mampu";
+                default: return "";
+            }
+        }
+
+        function formatTanggal(tanggal) {
+            const splitTgl = tanggal.split('-'); 
+            return `${splitTgl[2]}-${splitTgl[1]}-${splitTgl[0]}`;
+        }
+
+        function hitungStatistik() {
+            const filterUmur = document.getElementById('filterUmur').value;
+            const filterPendidikan = document.getElementById('filterPendidikan').value;
+            const filterEkonomi = document.getElementById('filterEkonomi').value;
+
+            let kategoriDipilih = [];
+            if (filterUmur !== "Semua") kategoriDipilih.push(filterUmur);
+            if (filterPendidikan !== "Semua") kategoriDipilih.push(filterPendidikan);
+            if (filterEkonomi !== "Semua") kategoriDipilih.push(filterEkonomi);
+
+            let teksKategori = "Semua Data Penduduk";
+            if (kategoriDipilih.length > 0) {
+                teksKategori = kategoriDipilih.join(" &nbsp; | &nbsp; ");
+            }
+
+            const barisTabel = document.querySelectorAll('#tabelData tbody tr');
+            let totalTampil = 0;
+
+            barisTabel.forEach(baris => {
+                if (baris.style.display !== "none" && !baris.classList.contains('baris-pesan')) {
+                    totalTampil++;
+                }
+            });
+
+            const panelStatistik = document.getElementById('panelStatistik');
+            panelStatistik.innerHTML = `
+                <div class="stat-card">
+                    <h3>Total Jumlah Sesuai Kategori</h3>
+                    <div class="kategori-label">${teksKategori}</div>
+                    <p>${totalTampil} <span class="teks-orang">Orang</span></p>
+                </div>
+            `;
+        }
+
+        // --- Fungsi untuk memuat (membaca) data dari Spreadsheet saat web dibuka ---
+        function muatDataDariSheets() {
+            const tbody = document.querySelector('#tabelData tbody');
+            tbody.innerHTML = '<tr class="baris-pesan"><td colspan="7" style="text-align:center; padding:20px;">Menarik data dari Google Sheets... ⏳</td></tr>';
+            
+            fetch(scriptURL)
+            .then(response => response.json())
+            .then(data => {
+                tbody.innerHTML = ''; 
+                
+                if(data.length === 0) {
+                    tbody.innerHTML = '<tr class="baris-pesan"><td colspan="7" style="text-align:center; padding:20px;">Belum ada data warga terdaftar.</td></tr>';
+                    hitungStatistik();
+                    return;
+                }
+
+                data.forEach(row => {
+                    // Cek jika data kosong, lewati baris ini
+                    if (!row.nik && !row.nama) return; 
+
+                    const badgeClass = getBadgeClass(row.ekonomi);
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td>${row.nik}</td>
+                        <td><strong>${row.nama}</strong></td>
+                        <td>${row.tanggalLahir}</td>
+                        <td>${row.umur} Tahun</td>
+                        <td>${row.kategoriUmur}</td>
+                        <td>${row.pendidikan}</td>
+                        <td><span class="${badgeClass}">${row.ekonomi}</span></td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+                
+                hitungStatistik();
+            })
+            .catch(error => {
+                console.error('Error fetching data:', error);
+                tbody.innerHTML = '<tr class="baris-pesan"><td colspan="7" style="text-align:center; color:red; padding:20px;">Gagal memuat data. Pastikan link URL sudah benar dan ada internet.</td></tr>';
+            });
+        }
+
+        // Panggil fungsi muat data otomatis saat web dibuka
+        window.onload = function() {
+            muatDataDariSheets();
+        };
+
+        // Fungsi Simpan Data
+        document.getElementById('pendudukForm').addEventListener('submit', function(e) {
+            e.preventDefault(); 
+            
+            const nik = document.getElementById('nik').value.trim();
+            const nama = document.getElementById('nama').value.trim();
+            const tanggalLahirAsli = document.getElementById('tanggalLahir').value;
+            const umur = parseInt(document.getElementById('umur').value);
+            const pendidikan = document.getElementById('pendidikan').value;
+            const ekonomi = document.getElementById('ekonomi').value;
+            
+            const tanggalLahirFormat = formatTanggal(tanggalLahirAsli);
+            const kategoriUmur = getKategoriUmur(umur);
+            const badgeClass = getBadgeClass(ekonomi);
+
+            const dataKirim = new URLSearchParams();
+            dataKirim.append('nik', nik);
+            dataKirim.append('nama', nama);
+            dataKirim.append('tanggalLahir', tanggalLahirFormat);
+            dataKirim.append('umur', umur);
+            dataKirim.append('kategoriUmur', kategoriUmur);
+            dataKirim.append('pendidikan', pendidikan);
+            dataKirim.append('ekonomi', ekonomi);
+
+            const btnSubmit = document.querySelector('.btn-submit');
+            const teksAsliTombol = btnSubmit.textContent;
+            btnSubmit.textContent = 'Menyimpan ke Spreadsheet... ⏳';
+            btnSubmit.disabled = true;
+
+            fetch(scriptURL, {
+                method: 'POST',
+                body: dataKirim
+            })
+            .then(response => response.text())
+            .then(teksRespons => {
+                // Setelah sukses simpan, langsung hapus pesan kosong jika ada
+                const pesanKosong = document.querySelector('.baris-pesan');
+                if (pesanKosong) pesanKosong.remove();
+
+                const tbody = document.querySelector('#tabelData tbody');
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${nik}</td>
+                    <td><strong>${nama}</strong></td>
+                    <td>${tanggalLahirFormat}</td>
+                    <td>${umur} Tahun</td>
+                    <td>${kategoriUmur}</td>
+                    <td>${pendidikan}</td>
+                    <td><span class="${badgeClass}">${ekonomi}</span></td>
+                `;
+
+                tbody.appendChild(row); 
+                document.getElementById('pendudukForm').reset(); 
+                document.getElementById('umur').value = ""; 
+                
+                saringTabel(); 
+                btnSubmit.textContent = teksAsliTombol;
+                btnSubmit.disabled = false;
+                
+                alert("Data " + nama + " berhasil ditambahkan!");
+            })
+            .catch(error => {
+                alert("Gagal menyimpan data ke Spreadsheet. Pastikan internet Anda lancar.");
+                btnSubmit.textContent = teksAsliTombol;
+                btnSubmit.disabled = false;
+            });
+        });
+
+        // Fungsi Filter Tabel
+        function saringTabel() {
+            const filterUmur = document.getElementById('filterUmur').value;
+            const filterPendidikan = document.getElementById('filterPendidikan').value;
+            const filterEkonomi = document.getElementById('filterEkonomi').value;
+            
+            const barisTabel = document.querySelectorAll('#tabelData tbody tr');
+
+            barisTabel.forEach(baris => {
+                if (baris.classList.contains('baris-pesan')) return;
+
+                const kategoriUmur = baris.cells[4].textContent.trim();
+                const pendidikan = baris.cells[5].textContent.trim();
+                const ekonomi = baris.cells[6].textContent.trim();
+
+                const cocokUmur = (filterUmur === "Semua" || kategoriUmur === filterUmur);
+                const cocokPendidikan = (filterPendidikan === "Semua" || pendidikan === filterPendidikan);
+                const cocokEkonomi = (filterEkonomi === "Semua" || ekonomi === filterEkonomi);
+
+                if (cocokUmur && cocokPendidikan && cocokEkonomi) {
+                    baris.style.display = ""; 
+                } else {
+                    baris.style.display = "none"; 
+                }
+            });
+
+            hitungStatistik();
+        }
+    </script>
+</body>
+</html>
